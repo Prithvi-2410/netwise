@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ====================================================
 
   const GEMINI_API_KEY = "";
-  const MODEL_NAME = "gemini-2.5-flash";
+  const MODEL_NAME = "gemini_2.5_flash";
 
   const systemInstructionText = `
 You are NetWise — an AI that ONLY answers Computer Networking questions:
@@ -278,3 +278,4 @@ Tone: short, technical, helpful.
 
 
 });
+
