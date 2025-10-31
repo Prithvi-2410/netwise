@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ================== GEMINI / NETWISE =================
   // ====================================================
 
-  const GEMINI_API_KEY = "AIzaSyBJrlxKkfy2HlLQvXeXHGU3VpGnvvpT1Rk";
+  const GEMINI_API_KEY = "";
   const MODEL_NAME = "gemini-2.5-flash";
 
   const systemInstructionText = `
@@ -275,5 +275,6 @@ Tone: short, technical, helpful.
   setTimeout(() => {
     appendMessage("Connection established. Ask a CN question.", 'bot');
   }, LOADER_FADE_MS + ANIMATION_DELAY_MS + 200);
+
 
 });
