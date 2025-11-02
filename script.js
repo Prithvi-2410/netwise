@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===================== GEMINI / NETWISE =====================
   async function sendToGemini(prompt) {
-  const GEMINI_API_KEY = "YOUR_API_KEY_HERE"; // put your actual key
+  const GEMINI_API_KEY = ""; // put your actual key
   const MODEL_NAME = "gemini-1.5-flash";
   const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
 
@@ -204,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     appendMessage("Connection established. Ask a CN question.", 'bot');
   }, LOADER_FADE_MS + ANIMATION_DELAY_MS + 200);
 });
+
 
 
 
