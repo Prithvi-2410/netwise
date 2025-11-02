@@ -137,47 +137,52 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ===================== GEMINI / NETWISE =====================
-  const GEMINI_API_KEY = ""; // <--- put your key here
-  const MODEL_NAME = "gemini-2.5-flash";
+  async function sendToGemini(prompt) {
+  const GEMINI_API_KEY = "YOUR_API_KEY_HERE"; // put your actual key
+  const MODEL_NAME = "gemini-1.5-flash";
+  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
 
-  const systemInstructionText = `
-You are NetWise — an AI that ONLY answers Computer Networking questions:
-OSI layers, TCP/IP, routing, switching, DNS, DHCP, ARP, network security, IoT protocols.
-Politely refuse non-networking questions.
-Tone: short, technical, helpful.
-`;
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: prompt }],
+          },
+        ],
+      }),
+    });
 
-  async function sendToGemini(message) {
-    if (!message || !message.trim()) return;
-    appendMessage(message, 'user');
-    showTyping();
+    const textResponse = await response.text(); // read raw text
+    console.log("RAW RESPONSE:", textResponse);
 
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
-    const body = {
-      systemInstruction: { parts: [{ text: systemInstructionText }] },
-      contents: [{ role: "user", parts: [{ text: message }] }],
-    };
-
+    let data;
     try {
-      // Use allorigins proxy to bypass CORS
-      const proxyURL = `https://api.allorigins.win/raw?url=${encodeURIComponent(API_URL)}`;
-      const res = await fetch(proxyURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      const data = await res.json();
-      hideTyping();
-
-      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "No reply from Gemini.";
-      appendMessage(reply, 'bot');
-    } catch (err) {
-      hideTyping();
-      appendMessage("⚠️ Error: " + err.message, 'bot');
+      data = JSON.parse(textResponse);
+    } catch {
+      addMessage("bot", "⚠️ Response is not valid JSON.");
+      return;
     }
+
+    if (!response.ok) {
+      console.error("Gemini API Error:", data);
+      addMessage("bot", `❌ Gemini API Error: ${data.error?.message || "Unknown"}`);
+      return;
+    }
+
+    const reply =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "⚡No reply from Gemini.";
+
+    addMessage("bot", reply);
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    addMessage("bot", "❌ Network error. Check console for details.");
   }
+}
 
   const sendButton = form.querySelector('button[type="submit"]') || form.querySelector('button');
   form.addEventListener('submit', e => {
@@ -199,5 +204,6 @@ Tone: short, technical, helpful.
     appendMessage("Connection established. Ask a CN question.", 'bot');
   }, LOADER_FADE_MS + ANIMATION_DELAY_MS + 200);
 });
+
 
 
