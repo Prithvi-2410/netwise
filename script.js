@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===================== GEMINI / NETWISE =====================
   const GEMINI_API_KEY = ""; // <--- put your key here
-  const MODEL_NAME = "gemini-2.0-flash";
+  const MODEL_NAME = "gemini-2.5-flash";
 
   const systemInstructionText = `
 You are NetWise — an AI that ONLY answers Computer Networking questions:
@@ -199,4 +199,5 @@ Tone: short, technical, helpful.
     appendMessage("Connection established. Ask a CN question.", 'bot');
   }, LOADER_FADE_MS + ANIMATION_DELAY_MS + 200);
 });
+
 
