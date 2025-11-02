@@ -135,7 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
   async function sendToGemini(prompt) {
     const GEMINI_API_KEY = ""; // 👈 put your actual key
     const MODEL_NAME = "gemini-2.5-flash";
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
+    const API_URL = `https://cors-anywhere.herokuapp.com/https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
+
 
     showTyping();
 
@@ -188,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     appendMessage("Connection established. Ask a CN question.", 'bot');
   }, LOADER_FADE_MS + ANIMATION_DELAY_MS + 200);
 });
+
 
 
 
