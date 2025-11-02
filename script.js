@@ -1,4 +1,3 @@
-/***** script.js — NetWise (Frontend-only Gemini) - FINAL *****/
 document.addEventListener('DOMContentLoaded', () => {
   const LOADER_FADE_MS = 1200;
   const ANIMATION_DELAY_MS = 300;
@@ -23,8 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     SUGGESTED.forEach(t => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className =
-        'text-xs px-3 py-1 rounded-full bg-slate-700/50 text-slate-200 hover:bg-slate-700 hover:text-sky-400 transition';
+      btn.className = 'text-xs px-3 py-1 rounded-full bg-slate-700/50 text-slate-200 hover:bg-slate-700 hover:text-sky-400 transition';
       btn.innerText = t;
       btn.onclick = () => { input.value = t; input.focus(); };
       topicChips.appendChild(btn);
@@ -76,9 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     wrapper.className = 'flex ' + (who === 'user' ? 'justify-end' : 'justify-start');
 
     const bubble = document.createElement('div');
-    bubble.className =
-      (who === 'user' ? 'bubble-user' : 'bubble-bot') +
-      ' px-4 py-2 rounded-2xl max-w-[80%] break-words whitespace-pre-wrap';
+    bubble.className = (who === 'user' ? 'bubble-user' : 'bubble-bot') + ' px-4 py-2 rounded-2xl max-w-[80%] break-words whitespace-pre-wrap';
 
     if (who === 'bot') {
       const safeText = escapeHtml(text).replace(/\n/g, '<br>');
@@ -99,8 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const el = document.createElement('div');
     el.className = 'flex items-center gap-2';
     el.id = 'typing';
-    el.innerHTML =
-      '<div class="w-3 h-3 rounded-full bg-sky-400/80 animate-pulse shadow-lg shadow-sky-400/40"></div><div class="text-slate-300 text-sm">NetWise is typing…</div>';
+    el.innerHTML = '<div class="w-3 h-3 rounded-full bg-sky-400/80 animate-pulse shadow-lg shadow-sky-400/40"></div><div class="text-slate-300 text-sm">NetWise is typing…</div>';
     messages.appendChild(el);
     messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
   }
@@ -136,59 +131,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ===================== GEMINI / NETWISE =====================
+  // ===================== GEMINI FRONTEND =====================
   async function sendToGemini(prompt) {
-  const GEMINI_API_KEY = ""; // put your actual key
-  const MODEL_NAME = "gemini-1.5-flash";
-  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
+    const GEMINI_API_KEY = ""; // 👈 put your actual key
+    const MODEL_NAME = "gemini-2.5-flash";
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
 
-  try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: prompt }],
-          },
-        ],
-      }),
-    });
+    showTyping();
 
-    const textResponse = await response.text(); // read raw text
-    console.log("RAW RESPONSE:", textResponse);
-
-    let data;
     try {
-      data = JSON.parse(textResponse);
-    } catch {
-      addMessage("bot", "⚠️ Response is not valid JSON.");
-      return;
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+        }),
+      });
+
+      const raw = await res.text();
+      console.log("RAW:", raw);
+      hideTyping();
+
+      if (!res.ok) {
+        appendMessage(`❌ API error: ${res.status}`, "bot");
+        return;
+      }
+
+      const data = JSON.parse(raw);
+      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "⚡No reply from Gemini.";
+      appendMessage(reply, "bot");
+    } catch (err) {
+      hideTyping();
+      console.error(err);
+      appendMessage("❌ Network error. Try again.", "bot");
     }
-
-    if (!response.ok) {
-      console.error("Gemini API Error:", data);
-      addMessage("bot", `❌ Gemini API Error: ${data.error?.message || "Unknown"}`);
-      return;
-    }
-
-    const reply =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "⚡No reply from Gemini.";
-
-    addMessage("bot", reply);
-  } catch (err) {
-    console.error("Fetch failed:", err);
-    addMessage("bot", "❌ Network error. Check console for details.");
   }
-}
 
   const sendButton = form.querySelector('button[type="submit"]') || form.querySelector('button');
   form.addEventListener('submit', e => {
     e.preventDefault();
     const text = input.value.trim();
     if (!text) return;
+    appendMessage(text, 'user');
     input.value = '';
     sendToGemini(text);
   });
@@ -204,6 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
     appendMessage("Connection established. Ask a CN question.", 'bot');
   }, LOADER_FADE_MS + ANIMATION_DELAY_MS + 200);
 });
+
+
 
 
 
